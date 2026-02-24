@@ -16,22 +16,22 @@ export default function QueryProcessor(query: string): string {
   if (query.toLowerCase().includes("name")) {
     return "darodri2";
   }
-  if (query.toLowerCase().includes("plus")) {
-    const matches = query.match(/(\d+)\s+plus\s+(\d+)/i);
+  if (query.toLowerCase().includes("plus") || query.includes("+")) {
+    const matches = query.match(/(\d+)\s+(?:plus|\+)\s+(\d+)/i);
     if (matches) {
       return (parseInt(matches[1]) + parseInt(matches[2])).toString();
     }
     return "";
   }
-  if (query.toLowerCase().includes("minus")) {
-    const matches = query.match(/(\d+)\s+minus\s+(\d+)/i);
+  if (query.toLowerCase().includes("minus") || query.includes("-")) {
+    const matches = query.match(/(\d+)\s+(?:minus|-)\s+(\d+)/i);
     if (matches) {
       return (parseInt(matches[1]) - parseInt(matches[2])).toString();
     }
     return "";
   }
-  if (query.toLowerCase().includes("times")) {
-    const matches = query.match(/(\d+)\s+times\s+(\d+)/i);
+  if (query.toLowerCase().includes("times") || query.includes("*")) {
+    const matches = query.match(/(\d+)\s+(?:times|\*)\s+(\d+)/i);
     if (matches) {
       return (parseInt(matches[1]) * parseInt(matches[2])).toString();
     }
