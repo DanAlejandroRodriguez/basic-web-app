@@ -56,6 +56,21 @@ export default function QueryProcessor(query: string): string {
     }
     return "";
   }
+  if (query.toLowerCase().includes("prime")) {
+    const matches = query.match(/\d+/g);
+    if (matches) {
+      const isPrime = (n: number) => {
+        if (n < 2) return false;
+        for (let i = 2; i <= Math.sqrt(n); i++) {
+          if (n % i === 0) return false;
+        }
+        return true;
+      };
+      const results = matches.map(Number).filter(isPrime);
+      return results.sort((a, b) => a - b).join(", ");
+    }
+    return "";
+  }
   if (query.toLowerCase().includes("largest")) {
     const matches = query.match(/\d+/g);
     if (matches) {
