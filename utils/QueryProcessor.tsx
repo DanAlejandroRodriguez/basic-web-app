@@ -23,6 +23,13 @@ export default function QueryProcessor(query: string): string {
     }
     return "";
   }
+  if (query.toLowerCase().includes("largest")) {
+    const matches = query.match(/\d+/g);
+    if (matches) {
+      return Math.max(...matches.map(Number)).toString();
+    }
+    return "";
+  }
 
   return "";
 }
