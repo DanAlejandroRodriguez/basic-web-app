@@ -52,7 +52,7 @@ export default function QueryProcessor(query: string): string {
         const cbrt = Math.round(Math.pow(n, 1 / 3));
         return sqrt * sqrt === n && cbrt * cbrt * cbrt === n;
       });
-      return results.join(", ");
+      return results.sort((a, b) => a - b).join(", ");
     }
     return "";
   }
