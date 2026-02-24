@@ -30,8 +30,8 @@ export default function QueryProcessor(query: string): string {
     }
     return "";
   }
-  if (query.toLowerCase().includes("times") || query.includes("*")) {
-    const matches = query.match(/(\d+)\s+(?:times|\*)\s+(\d+)/i);
+  if (query.toLowerCase().includes("multiplied by") || query.includes("*")) {
+    const matches = query.match(/(\d+)\s+(?:multiplied by|\*)\s+(\d+)/i);
     if (matches) {
       return (parseInt(matches[1]) * parseInt(matches[2])).toString();
     }
