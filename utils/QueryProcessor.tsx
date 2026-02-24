@@ -37,6 +37,13 @@ export default function QueryProcessor(query: string): string {
     }
     return "";
   }
+  if (query.toLowerCase().includes("divided by") || query.includes("/")) {
+    const matches = query.match(/(\d+)\s+(?:divided by|\/)\s+(\d+)/i);
+    if (matches) {
+      return (parseInt(matches[1]) / parseInt(matches[2])).toString();
+    }
+    return "";
+  }
   if (query.toLowerCase().includes("square") && query.toLowerCase().includes("cube")) {
     const matches = query.match(/\d+/g);
     if (matches) {
