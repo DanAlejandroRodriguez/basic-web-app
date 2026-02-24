@@ -37,6 +37,18 @@ export default function QueryProcessor(query: string): string {
     }
     return "";
   }
+  if (query.toLowerCase().includes("square") && query.toLowerCase().includes("cube")) {
+    const matches = query.match(/\d+/g);
+    if (matches) {
+      const results = matches.map(Number).filter((n) => {
+        const sqrt = Math.round(Math.pow(n, 1 / 2));
+        const cbrt = Math.round(Math.pow(n, 1 / 3));
+        return sqrt * sqrt === n && cbrt * cbrt * cbrt === n;
+      });
+      return results.join(", ");
+    }
+    return "";
+  }
   if (query.toLowerCase().includes("largest")) {
     const matches = query.match(/\d+/g);
     if (matches) {
