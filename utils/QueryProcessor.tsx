@@ -32,6 +32,22 @@ export default function QueryProcessor(query: string): string {
     return "";
   }
 
+  if (query.toLowerCase().includes("anagram")) {
+    const match = query.match(/anagram of\s+(\w+)/i);
+    if (match) {
+      const target = match[1].toLowerCase().split("").sort().join("");
+      const candidates = query.match(/:\s*(.+?)(\?|$)/i);
+      if (candidates) {
+        const words = candidates[1].split(/,\s*/).map((w) => w.trim());
+        const results = words.filter(
+          (w) => w.toLowerCase().split("").sort().join("") === target
+        );
+        return results.join(", ");
+      }
+    }
+    return "";
+  }
+
   // Expression evaluator with PEMDAS
   if (
     query.toLowerCase().includes("plus") ||
