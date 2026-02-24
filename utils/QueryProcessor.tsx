@@ -16,41 +16,39 @@ export default function QueryProcessor(query: string): string {
   if (query.toLowerCase().includes("name")) {
     return "darodri2";
   }
-  if (query.toLowerCase().includes("plus") || query.includes("+")) {
-    const matches = query.match(/\d+/g);
-    if (matches) {
-      return matches.map(Number).reduce((a, b) => a + b, 0).toString();
+
+  // Expression evaluator with PEMDAS
+  if (
+    query.toLowerCase().includes("plus") ||
+    query.toLowerCase().includes("minus") ||
+    query.toLowerCase().includes("multiplied by") ||
+    query.toLowerCase().includes("divided by") ||
+    query.toLowerCase().includes("to the power of") ||
+    /\d+\s*[+\-*/^]\s*\d+/.test(query)
+  ) {
+    // Normalize the query into a math expression string
+    let expr = query.toLowerCase();
+    // Remove everything before "what is" or "calculate" if present
+    expr = expr.replace(/^.*?(?:what is|calculate)\s*/i, "");
+    // Remove trailing question mark
+    expr = expr.replace(/\?$/, "").trim();
+    // Replace words with operators
+    expr = expr.replace(/\bto the power of\b/g, "^");
+    expr = expr.replace(/\bmultiplied by\b/g, "*");
+    expr = expr.replace(/\bdivided by\b/g, "/");
+    expr = expr.replace(/\bplus\b/g, "+");
+    expr = expr.replace(/\bminus\b/g, "-");
+    // Remove any remaining non-math characters (keep digits, operators, spaces, dots)
+    expr = expr.replace(/[^0-9+\-*/^.\s]/g, "").trim();
+
+    try {
+      const result = evaluateExpression(expr);
+      return Number.isInteger(result) ? result.toString() : result.toString();
+    } catch {
+      return "";
     }
-    return "";
   }
-  if (query.toLowerCase().includes("minus") || query.includes("-")) {
-    const matches = query.match(/(\d+)\s+(?:minus|-)\s+(\d+)/i);
-    if (matches) {
-      return (parseInt(matches[1]) - parseInt(matches[2])).toString();
-    }
-    return "";
-  }
-  if (query.toLowerCase().includes("multiplied by") || query.includes("*")) {
-    const matches = query.match(/(\d+)\s+(?:multiplied by|\*)\s+(\d+)/i);
-    if (matches) {
-      return (parseInt(matches[1]) * parseInt(matches[2])).toString();
-    }
-    return "";
-  }
-  if (query.toLowerCase().includes("divided by") || query.includes("/")) {
-    const matches = query.match(/(\d+)\s+(?:divided by|\/)\s+(\d+)/i);
-    if (matches) {
-      return (parseInt(matches[1]) / parseInt(matches[2])).toString();
-    }
-    return "";
-  }
-  if (query.toLowerCase().includes("to the power of") || query.includes("^")) {
-    const matches = query.match(/(\d+)\s+(?:to the power of|\^)\s+(\d+)/i);
-    if (matches) {
-      return (Math.pow(parseInt(matches[1]), parseInt(matches[2]))).toString();
-    }
-    return "";
-  }
+
   if (query.toLowerCase().includes("square") && query.toLowerCase().includes("cube")) {
     const matches = query.match(/\d+/g);
     if (matches) {
@@ -94,4 +92,86 @@ export default function QueryProcessor(query: string): string {
   }
 
   return "";
+}
+
+// Recursive descent parser for PEMDAS
+function evaluateExpression(expr: string): number {
+  const tokens = tokenize(expr);
+  let pos = 0;
+
+  function peek(): string | null {
+    return pos < tokens.length ? tokens[pos] : null;
+  }
+  function consume(): string {
+    return tokens[pos++];
+  }
+
+  // Addition and subtraction (lowest precedence)
+  function parseAddSub(): number {
+    let left = parseMulDiv();
+    while (peek() === "+" || peek() === "-") {
+      const op = consume();
+      const right = parseMulDiv();
+      left = op === "+" ? left + right : left - right;
+    }
+    return left;
+  }
+
+  // Multiplication and division
+  function parseMulDiv(): number {
+    let left = parsePower();
+    while (peek() === "*" || peek() === "/") {
+      const op = consume();
+      const right = parsePower();
+      left = op === "*" ? left * right : left / right;
+    }
+    return left;
+  }
+
+  // Exponentiation (right-associative)
+  function parsePower(): number {
+    let base = parseAtom();
+    if (peek() === "^") {
+      consume();
+      const exp = parsePower();
+      base = Math.pow(base, exp);
+    }
+    return base;
+  }
+
+  // Numbers
+  function parseAtom(): number {
+    const token = consume();
+    const num = parseFloat(token);
+    if (isNaN(num)) throw new Error("Unexpected token: " + token);
+    return num;
+  }
+
+  const result = parseAddSub();
+  return result;
+}
+
+function tokenize(expr: string): string[] {
+  const tokens: string[] = [];
+  let i = 0;
+  while (i < expr.length) {
+    if (expr[i] === " ") {
+      i++;
+      continue;
+    }
+    if ("+-*/^".includes(expr[i])) {
+      tokens.push(expr[i]);
+      i++;
+    } else if (/[0-9.]/.test(expr[i])) {
+      let num = "";
+      while (i < expr.length && /[0-9.]/.test(expr[i])) {
+        num += expr[i];
+        i++;
+      }
+      tokens.push(num);
+    } else {
+      i++;
+    }
+  }
+  return tokens;
 }
