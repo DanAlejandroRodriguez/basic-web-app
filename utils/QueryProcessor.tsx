@@ -30,6 +30,13 @@ export default function QueryProcessor(query: string): string {
     }
     return "";
   }
+  if (query.toLowerCase().includes("smallest")) {
+    const matches = query.match(/\d+/g);
+    if (matches) {
+      return Math.min(...matches.map(Number)).toString();
+    }
+    return "";
+  }
 
   return "";
 }
