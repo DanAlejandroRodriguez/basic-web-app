@@ -23,6 +23,20 @@ export default function QueryProcessor(query: string): string {
     }
     return "";
   }
+  if (query.toLowerCase().includes("minus")) {
+    const matches = query.match(/(\d+)\s+minus\s+(\d+)/i);
+    if (matches) {
+      return (parseInt(matches[1]) - parseInt(matches[2])).toString();
+    }
+    return "";
+  }
+  if (query.toLowerCase().includes("times")) {
+    const matches = query.match(/(\d+)\s+times\s+(\d+)/i);
+    if (matches) {
+      return (parseInt(matches[1]) * parseInt(matches[2])).toString();
+    }
+    return "";
+  }
   if (query.toLowerCase().includes("largest")) {
     const matches = query.match(/\d+/g);
     if (matches) {
