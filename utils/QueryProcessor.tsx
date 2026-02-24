@@ -17,9 +17,9 @@ export default function QueryProcessor(query: string): string {
     return "darodri2";
   }
   if (query.toLowerCase().includes("plus") || query.includes("+")) {
-    const matches = query.match(/(\d+)\s+(?:plus|\+)\s+(\d+)/i);
+    const matches = query.match(/\d+/g);
     if (matches) {
-      return (parseInt(matches[1]) + parseInt(matches[2])).toString();
+      return matches.map(Number).reduce((a, b) => a + b, 0).toString();
     }
     return "";
   }
