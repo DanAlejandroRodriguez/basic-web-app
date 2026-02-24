@@ -161,7 +161,19 @@ function tokenize(expr: string): string[] {
       i++;
       continue;
     }
-    if ("+-*/^".includes(expr[i])) {
+    // Handle unary minus: '-' at start or after another operator
+    if (
+      expr[i] === "-" &&
+      (tokens.length === 0 || "+-*/^".includes(tokens[tokens.length - 1]))
+    ) {
+      let num = "-";
+      i++;
+      while (i < expr.length && /[0-9.]/.test(expr[i])) {
+        num += expr[i];
+        i++;
+      }
+      tokens.push(num);
+    } else if ("+-*/^".includes(expr[i])) {
       tokens.push(expr[i]);
       i++;
     } else if (/[0-9.]/.test(expr[i])) {
@@ -174,9 +186,6 @@ function tokenize(expr: string): string[] {
     } else {
       i++;
     }
-  }
-  return tokens;
-}
   }
   return tokens;
 }
