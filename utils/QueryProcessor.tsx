@@ -17,8 +17,8 @@ export default function QueryProcessor(query: string): string {
     return "darodri2";
   }
 
-  if (query.toLowerCase().includes("scrabble score")) {
-    const match = query.match(/scrabble score of\s+(\w+)/i);
+  if (query.toLowerCase().includes("scrabble")) {
+    const match = query.match(/scrabble\s+score\s+(?:of\s+)?(\w+)/i);
     if (match) {
       const word = match[1].toLowerCase();
       const scores: Record<string, number> = {
