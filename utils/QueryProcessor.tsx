@@ -17,6 +17,21 @@ export default function QueryProcessor(query: string): string {
     return "darodri2";
   }
 
+  if (query.toLowerCase().includes("scrabble score")) {
+    const match = query.match(/scrabble score of\s+(\w+)/i);
+    if (match) {
+      const word = match[1].toLowerCase();
+      const scores: Record<string, number> = {
+        a: 1, b: 3, c: 3, d: 2, e: 1, f: 4, g: 2, h: 4, i: 1,
+        j: 8, k: 5, l: 1, m: 3, n: 1, o: 1, p: 3, q: 10, r: 1,
+        s: 1, t: 1, u: 1, v: 4, w: 4, x: 8, y: 4, z: 10,
+      };
+      const total = word.split("").reduce((sum, ch) => sum + (scores[ch] || 0), 0);
+      return total.toString();
+    }
+    return "";
+  }
+
   // Expression evaluator with PEMDAS
   if (
     query.toLowerCase().includes("plus") ||
