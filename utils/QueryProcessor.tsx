@@ -16,6 +16,13 @@ export default function QueryProcessor(query: string): string {
   if (query.toLowerCase().includes("name")) {
     return "darodri2";
   }
+  if (query.toLowerCase().includes("plus")) {
+    const matches = query.match(/(\d+)\s+plus\s+(\d+)/i);
+    if (matches) {
+      return (parseInt(matches[1]) + parseInt(matches[2])).toString();
+    }
+    return "";
+  }
 
   return "";
 }
