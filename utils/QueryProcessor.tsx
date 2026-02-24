@@ -43,7 +43,7 @@ export default function QueryProcessor(query: string): string {
 
     try {
       const result = evaluateExpression(expr);
-      return Number.isInteger(result) ? result.toString() : result.toString();
+      return result.toString();
     } catch {
       return "";
     }
@@ -94,8 +94,8 @@ export default function QueryProcessor(query: string): string {
   return "";
 }
 
-// Recursive descent parser for PEMDAS
-function evaluateExpression(expr: string): number {
+// Recursive descent parser for PEMDAS using BigInt
+function evaluateExpression(expr: string): bigint {
   const tokens = tokenize(expr);
   let pos = 0;
 
@@ -107,7 +107,7 @@ function evaluateExpression(expr: string): number {
   }
 
   // Addition and subtraction (lowest precedence)
-  function parseAddSub(): number {
+  function parseAddSub(): bigint {
     let left = parseMulDiv();
     while (peek() === "+" || peek() === "-") {
       const op = consume();
@@ -118,7 +118,7 @@ function evaluateExpression(expr: string): number {
   }
 
   // Multiplication and division
-  function parseMulDiv(): number {
+  function parseMulDiv(): bigint {
     let left = parsePower();
     while (peek() === "*" || peek() === "/") {
       const op = consume();
@@ -129,22 +129,24 @@ function evaluateExpression(expr: string): number {
   }
 
   // Exponentiation (right-associative)
-  function parsePower(): number {
+  function parsePower(): bigint {
     let base = parseAtom();
     if (peek() === "^") {
       consume();
       const exp = parsePower();
-      base = Math.pow(base, exp);
+      base = base ** exp;
     }
     return base;
   }
 
   // Numbers
-  function parseAtom(): number {
+  function parseAtom(): bigint {
     const token = consume();
-    const num = parseFloat(token);
-    if (isNaN(num)) throw new Error("Unexpected token: " + token);
-    return num;
+    try {
+      return BigInt(token);
+    } catch {
+      throw new Error("Unexpected token: " + token);
+    }
   }
 
   const result = parseAddSub();
@@ -172,6 +174,9 @@ function tokenize(expr: string): string[] {
     } else {
       i++;
     }
+  }
+  return tokens;
+}
   }
   return tokens;
 }
