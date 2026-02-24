@@ -44,6 +44,13 @@ export default function QueryProcessor(query: string): string {
     }
     return "";
   }
+  if (query.toLowerCase().includes("to the power of") || query.includes("^")) {
+    const matches = query.match(/(\d+)\s+(?:to the power of|\^)\s+(\d+)/i);
+    if (matches) {
+      return (Math.pow(parseInt(matches[1]), parseInt(matches[2]))).toString();
+    }
+    return "";
+  }
   if (query.toLowerCase().includes("square") && query.toLowerCase().includes("cube")) {
     const matches = query.match(/\d+/g);
     if (matches) {
